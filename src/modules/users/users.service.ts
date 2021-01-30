@@ -1,9 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Iuser } from '../../interfaces/Iuser.model';
 
 @Injectable()
 export class UsersService {
-  private users: Iuser[] = [];
+  private users: Iuser[] = [
+      {id: 1, name: 'Fernando'},
+      {id: 2, name: 'wilker'}
+  ];
 
   public getUsers(): Iuser[] {
     return this.users;
@@ -28,9 +31,21 @@ export class UsersService {
     if(!original) {
         throw new Error("Usuario não encontrado!");
     }
-    
+
     Object.assign(original, userWithoutId);
 
     return original;
+  }
+
+  public deleteUser(id: number) {
+    const valueInitial = this.users.length;
+    this.users = this.users.filter(us => us.id !== id)
+
+    if (!(this.users.length - valueInitial)) {
+        throw new HttpException('Usuario não encontrado.', HttpStatus.NOT_FOUND);
+    }
+
+    return 'Usuario excluido com sucesso!';
+
   }
 }

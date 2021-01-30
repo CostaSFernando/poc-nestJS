@@ -1,22 +1,28 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Res,
+  UseInterceptors,
 } from '@nestjs/common';
 import { get } from 'http';
 import { UsersService } from './users.service';
 import { Iuser } from '../../interfaces/Iuser.model';
 import { Response } from 'express';
+import { LogsInterceptor } from '../../interceptors/logs.interceptor';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
+  
+  @UseInterceptors(LogsInterceptor)
   @Get()
   getUsuarios() {
     return this.userService.getUsers();
@@ -44,4 +50,9 @@ export class UsersController {
       return res.status(404).send({ error: error.message });
     }
   }
+  @Delete(':id')
+  deleteUser(@Param('id', ParseIntPipe) id: number) {
+    return this.userService.deleteUser(id);
+  }
+
 }
